@@ -2,7 +2,7 @@
 <!--
 ================================================================================
   DEPLOY (GitHub Pages / Store host): upload this single file as index.html
-  (or replace the existing hosted HTML). Desktop width fix: v60p-261d.
+  (or replace the existing hosted HTML). Desktop width fix: v60p-261e.
   Phone/tablet layouts unchanged — max-width only bites on wide viewports.
 ================================================================================
 -->
@@ -484,16 +484,18 @@ h1,h2,h3{font-weight:700;line-height:1.3;color:var(--tx)}
 .modal-box{background:var(--card);border-radius:var(--r);width:100%;max-width:560px;max-height:94vh;overflow-y:auto;box-shadow:0 24px 48px rgba(0,0,0,.2);display:flex;flex-direction:column}
 .modal-box.lg{max-width:780px}
 .modal-box.sm{max-width:420px}
-/* v60p-261d DESKTOP FIX: phone max-widths left as base; widen panels on laptop/desktop.
+/* v60p-261e DESKTOP FIX: phone max-widths left as base; widen panels on laptop/desktop.
    Store/PWA loads this hosted file — maximise alone cannot override max-width. */
 @media (min-width:900px){
   .modal-box{max-width:min(960px,96vw)}
-  .modal-box.lg{max-width:min(1120px,96vw)}
-  .modal-box.sm{max-width:min(480px,96vw)}
+  .modal-box.lg{max-width:min(1200px,96vw)}
+  .modal-box.sm{max-width:min(520px,96vw)}
+  .view{padding:18px 28px}
 }
 @media (min-width:1280px){
-  .modal-box{max-width:min(1040px,94vw)}
-  .modal-box.lg{max-width:min(1200px,94vw)}
+  .modal-box{max-width:min(1100px,94vw)}
+  .modal-box.lg{max-width:min(1400px,94vw)}
+  .view{padding:20px 36px}
 }
 .modal-h{padding:18px 22px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .modal-h h2{font-size:17px;font-weight:700;color:var(--tx);flex:1}
@@ -2125,7 +2127,7 @@ body.gantt-fs .bos-chip-floating { display:inline-flex !important }
 
 <!-- CAMERA CAPTURE -->
 <div id="cameraDlg" class="modal">
-  <div class="modal-box" style="max-width:500px">
+  <div class="modal-box" style="max-width:min(840px,96vw)">
     <div class="modal-h"><h2 id="camTitle">📷 Take photo</h2><button class="x" onclick="CAM.close()">×</button></div>
     <div class="modal-b" style="text-align:center;padding:14px">
       <video id="camVideo" autoplay playsinline style="width:100%;max-height:50vh;border-radius:var(--r);background:#000;display:block"></video>
@@ -2303,7 +2305,7 @@ body.gantt-fs .bos-chip-floating { display:inline-flex !important }
 
 /* v60p-120: build constant — used by FMT.provenanceStamp() so every output (BoS, Director
    Brief, dashboard, PDFs) carries the same version label. Updated on every release. */
-if (typeof window !== 'undefined') window.__AMELIE_BUILD__ = '60p-261d';
+if (typeof window !== 'undefined') window.__AMELIE_BUILD__ = '60p-261e';
 /* v60p-222: PUBLIC version — the clean number users and the app stores see ("1.0").
    The internal build above stays precise for forensic traceability and bug reports.
    UI shows the public version; exported reports show "v1.0 (build 60p-221)". */
@@ -5001,7 +5003,7 @@ const UI = {
     }
 
     v.innerHTML =
-      '<div style="max-width:1100px;margin:0 auto">' +
+      '<div style="max-width:min(1600px,98vw);margin:0 auto">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">' +
           '<h1 style="font-size:22px;font-weight:800;color:var(--tx);flex:1">All projects <span style="color:var(--mt);font-weight:500;font-size:15px">(' + projects.length + ')</span></h1>' +
         '</div>' +
@@ -6879,7 +6881,7 @@ const UI = {
     }))];
     const sym = c => currencyInfo(c).symbol; /* v60p: International Mode — registry-aware */
     v.innerHTML =
-      '<div style="padding:14px;max-width:1100px;margin:0 auto">' +
+      '<div style="padding:14px;max-width:min(1600px,98vw);margin:0 auto">' +
         '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">' +
           '<h2 style="font-size:18px;font-weight:800;color:var(--tx)">🌍 Community Library</h2>' +
           '<span style="font-size:12px;color:var(--mt)">'+all.length+' templates · '+local.length+' from community</span>' +
@@ -7251,7 +7253,7 @@ const UI = {
         '</div>'
       : '';
     v.innerHTML =
-      '<div style="padding:14px;max-width:800px;margin:0 auto">' +
+      '<div style="padding:14px;max-width:min(1400px,98vw);margin:0 auto">' +
         pClsRow +
         '<div class="card">' +
           '<div class="card-h"><h3>Project notes</h3><div class="act"><button class="btn btn-sm btn-a" onclick="N.add()">+ Add note</button></div></div>' +
@@ -7390,7 +7392,7 @@ const UI = {
       const googleMapsBase = 'https://www.google.com/maps/search/';
 
       v.innerHTML =
-        '<div style="padding:14px;max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px">' +
+        '<div style="padding:14px;max-width:min(1500px,98vw);margin:0 auto;display:flex;flex-direction:column;gap:14px">' +
 
           '<div class="card">' +
             '<div class="card-h"><h3>🌤 Local Weather</h3>' +
@@ -9126,7 +9128,7 @@ const TIER = {
   showUpgrade(featureName){
     var dlg = document.getElementById('tierUpgradeDlg') || (function(){ var d=document.createElement('div'); d.id='tierUpgradeDlg'; d.className='modal'; document.body.appendChild(d); return d; })();
     var feat = featureName ? ('<b>' + FMT.esc(featureName) + '</b> is a Pro feature. ') : '';
-    dlg.innerHTML = '<div class="modal-box" style="max-width:420px">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(640px,96vw)">' +
       '<div class="modal-h" style="background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;padding:16px 18px">' +
         '<div style="font-size:16px;font-weight:800">⭐ Unlock AMELIE Pro</div>' +
         '<div style="font-size:11px;opacity:.92;margin-top:2px">One-time upgrade — no subscription</div>' +
@@ -9432,7 +9434,7 @@ const PARTYWALL = {
     var cur = p.partyWall.nation || '';
     var dlg = document.getElementById('pwDlg') || (function(){ var d=document.createElement('div'); d.id='pwDlg'; d.className='modal'; document.body.appendChild(d); return d; })();
     var natBtn = function(val,label){ return '<button class="btn" onclick="PARTYWALL.setNation(\'' + val + '\')" style="width:100%;margin-bottom:6px;text-align:left' + (cur===val?';border-color:var(--ac);background:var(--ac-bg)':'') + '">' + label + (cur===val?' \u2713':'') + '</button>'; };
-    dlg.innerHTML = '<div class="modal-box" style="max-width:440px">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(720px,96vw)">' +
       '<div class="modal-h" style="background:linear-gradient(135deg,#b45309,#92400e);color:#fff;padding:14px 18px">' +
         '<div style="font-size:15px;font-weight:700">\ud83e\uddf1 Party Wall check</div>' +
         '<div style="font-size:11px;opacity:.9;margin-top:2px">The rules differ across the UK nations</div>' +
@@ -10509,7 +10511,7 @@ const PROJ = {
       document.body.appendChild(dlg);
     }
     dlg.innerHTML =
-      '<div class="modal-box" style="max-width:480px">' +
+      '<div class="modal-box" style="max-width:min(800px,96vw)">' +
         '<div class="modal-h"><h2>Project actions</h2><button class="x" onclick="PROJ.close()">×</button></div>' +
         '<div class="modal-b" style="padding:18px">' +
           '<div style="font-size:12px;color:var(--mt);margin-bottom:14px">For: <strong style="color:var(--tx)">' + FMT.esc(p.name) + '</strong></div>' +
@@ -11043,7 +11045,7 @@ const PLANNER = {
         '</div>' +
       '</div>';
     }).join('');
-    return '<div style="padding:14px;max-width:1100px;margin:0 auto">' +
+    return '<div style="padding:14px;max-width:min(1600px,98vw);margin:0 auto">' +
       (typeof LEGAL !== 'undefined' ? LEGAL.banner('planner') : '') +
       '<div class="card" style="margin-bottom:14px;border-left:4px solid #38b6ff">' +
         '<div class="card-b" style="padding:18px 22px">' +
@@ -11083,7 +11085,7 @@ const PLANNER = {
     const type = this.type(state.typeId);
     const stats = this._stats(state.tree);
     const phaseRows = state.tree.map(function(ph){ return self._renderPhase(ph); }).join('');
-    return '<div style="padding:14px;max-width:1100px;margin:0 auto">' +
+    return '<div style="padding:14px;max-width:min(1600px,98vw);margin:0 auto">' +
       (typeof LEGAL !== 'undefined' ? LEGAL.banner('planner') : '') +
       '<div class="card" style="margin-bottom:14px">' +
         '<div class="card-b" style="padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
@@ -11249,7 +11251,7 @@ const PLANNER = {
     const unitOpts = ['','m','m²','m³','linear m','number','tonnes','hours','days'].map(function(u){
       return '<option value="' + u + '"' + (t.unit===u?' selected':'') + '>' + (u||'(none)') + '</option>';
     }).join('');
-    dlg.innerHTML = '<div class="modal-box" style="max-width:680px">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(960px,96vw)">' +
       '<div class="modal-h"><h2 style="font-size:14px">' + self._esc(ph.icon) + ' ' + self._esc(t.code) + ' &mdash; ' + self._esc(t.name) + '</h2><button class="x" onclick="PLANNER._closeDetail()">&times;</button></div>' +
       '<div class="modal-b" style="padding:16px 20px;max-height:70vh;overflow-y:auto">' +
         '<div style="background:#f0f9ff;border-left:3px solid #38b6ff;padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:12px;color:#0c4a6e;line-height:1.6">' +
@@ -14808,7 +14810,7 @@ const CAL = {
     const auditCount = (cal.auditLog || []).length;
 
     dlg.innerHTML =
-      '<div class="modal-box" style="max-width:680px">' +
+      '<div class="modal-box" style="max-width:min(960px,96vw)">' +
         '<div class="modal-h"><h2>📅 Working Calendar</h2><button class="x" onclick="CAL.close()">×</button></div>' +
         '<div class="modal-b" style="padding:18px 22px">' +
 
@@ -29498,7 +29500,7 @@ const SHARE = {
         '<span>' + l.icon + ' ' + l.label + '</span></label>';
     }).join('');
     
-    dlg.innerHTML = '<div class="modal-box" style="max-width:680px">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(960px,96vw)">' +
       '<div class="modal-h"><h2 style="font-size:14px">\ud83d\udce4 Share project info</h2><button class="x" onclick="document.getElementById(\'shareDlg\').classList.remove(\'open\')">&times;</button></div>' +
       '<div class="modal-b" style="padding:16px;max-height:75vh;overflow-y:auto">' +
         '<div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:8px 12px;border-radius:0 6px 6px 0;font-size:11px;color:#78350f;margin-bottom:14px">' +
@@ -36401,7 +36403,7 @@ const LOOKAHEAD = {
       });
     }
     
-    dlg.innerHTML = "<div class=\"modal-box\" style=\"max-width:1100px;display:flex;flex-direction:column;max-height:92vh\">" +
+    dlg.innerHTML = "<div class=\"modal-box\" style=\"max-width:min(1600px,96vw);display:flex;flex-direction:column;max-height:92vh\">" +
       "<div class=\"modal-h\" style=\"background:linear-gradient(90deg,#0369a1,#0c4a6e);color:#fff;padding:14px 18px\">" +
         "<div style=\"display:flex;justify-content:space-between;align-items:center\">" +
           "<div>" +
@@ -36599,7 +36601,7 @@ const RESLEVEL = {
 
     var card = function(num, label, colour, bg, br){ return "<div style=\"flex:1;min-width:90px;background:" + bg + ";border:1px solid " + br + ";border-radius:8px;padding:8px 10px;text-align:center\"><div style=\"font-size:20px;font-weight:800;color:" + colour + "\">" + num + "</div><div style=\"font-size:10px;color:" + colour + ";font-weight:600\">" + label + "</div></div>"; };
 
-    dlg.innerHTML = "<div class=\"modal-box\" style=\"max-width:1100px;display:flex;flex-direction:column;max-height:92vh\">" +
+    dlg.innerHTML = "<div class=\"modal-box\" style=\"max-width:min(1600px,96vw);display:flex;flex-direction:column;max-height:92vh\">" +
       "<div class=\"modal-h\" style=\"background:linear-gradient(90deg,#7c3aed,#5b21b6);color:#fff;padding:14px 18px\">" +
         "<div style=\"display:flex;justify-content:space-between;align-items:center\">" +
           "<div><div style=\"font-size:15px;font-weight:700\">\u2696\ufe0f Resource Levelling \u2014 " + weeks + " weeks</div>" +
@@ -37288,7 +37290,7 @@ const VARIATIONS_REGISTER = {
       pctOfContract = '<div style="font-size:10px;color:' + col + ';margin-top:3px">' + (pct>=0?'+':'') + pct.toFixed(1) + '% of contract sum' + warn + '</div>';
     }
 
-    dlg.innerHTML = '<div class="modal-box" style="max-width:1100px;display:flex;flex-direction:column;max-height:94vh">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(1600px,96vw);display:flex;flex-direction:column;max-height:94vh">' +
       '<div class="modal-h" style="background:linear-gradient(90deg,#8b5cf6,#6d28d9);color:#fff;padding:14px 18px;flex-shrink:0">' +
         '<div style="display:flex;justify-content:space-between;align-items:center">' +
           '<div>' +
@@ -42282,7 +42284,7 @@ const AUDIT_UI = {
     '</div>'; }).join('');
     var dlg = document.getElementById('auditUiDlg') || (function(){ var d=document.createElement('div'); d.id='auditUiDlg'; d.className='modal'; document.body.appendChild(d); return d; })();
     dlg.innerHTML =
-      '<div class="modal-box" style="max-width:680px">' +
+      '<div class="modal-box" style="max-width:min(960px,96vw)">' +
         '<div class="modal-h" style="background:linear-gradient(90deg,#0f172a,#1e293b);color:#fff;padding:14px 18px">' +
           '<div style="display:flex;justify-content:space-between;align-items:center">' +
             '<div><div style="font-size:15px;font-weight:700">\ud83d\udd0d Project Data Audit</div>' +
@@ -44367,7 +44369,7 @@ const SRA_UI = {
       dlg.className = 'modal';
       document.body.appendChild(dlg);
     }
-    dlg.innerHTML = '<div class="modal-box" style="max-width:480px">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(800px,96vw)">' +
       '<div class="modal-h" style="background:#0a1a2a;color:#fff">' +
         '<div style="display:flex;align-items:center;gap:10px">' +
           '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#0a1a2a;border:1px solid #38b6ff;border-radius:6px;color:#38b6ff;font-weight:800;font-size:11px">AM</span>' +
@@ -45622,7 +45624,7 @@ const SRA_UI = {
       '</div>';
     }
 
-    dlg.innerHTML = '<div class="modal-box" style="max-width:1100px;max-height:92vh;display:flex;flex-direction:column">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(1600px,96vw);max-height:92vh;display:flex;flex-direction:column">' +
       '<div class="modal-h" style="background:#0a1a2a;color:#fff;flex-shrink:0">' +
         '<div style="display:flex;align-items:center;gap:10px">' +
           '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#0a1a2a;border:1px solid #38b6ff;border-radius:6px;color:#38b6ff;font-weight:800;font-size:11px">AM</span>' +
@@ -45846,7 +45848,7 @@ const SRA_UI = {
         '</table>' +
       '</div>';
     
-    dlg.innerHTML = '<div class="modal-box" style="max-width:1100px;max-height:92vh;display:flex;flex-direction:column">' +
+    dlg.innerHTML = '<div class="modal-box" style="max-width:min(1600px,96vw);max-height:92vh;display:flex;flex-direction:column">' +
       '<div class="modal-h" style="background:#0a1a2a;color:#fff;flex-shrink:0">' +
         '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
           '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#0a1a2a;border:1px solid #38b6ff;border-radius:6px;color:#38b6ff;font-weight:800;font-size:11px">AM</span>' +
@@ -50294,7 +50296,7 @@ const WELCOME = {
      their 300ms click delay; we restore it just for this modal. */
   _safeTap(fn){
     const dlg = document.getElementById('welcomeBoxDlg');
-    /* v60p-261d DESKTOP FIX: tap shield is for touch only. Mouse/trackpad on laptop
+    /* v60p-261e DESKTOP FIX: tap shield is for touch only. Mouse/trackpad on laptop
        was discarding the first click (Pro/DIY felt broken). */
     const isTouch = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
     if (isTouch && dlg && dlg._tapShieldUntil && Date.now() < dlg._tapShieldUntil) {
@@ -50414,7 +50416,7 @@ const SELFCHECK = {
     let dlg = document.getElementById('selfcheckDlg');
     if (!dlg) { dlg = document.createElement('div'); dlg.id = 'selfcheckDlg'; dlg.className = 'modal'; document.body.appendChild(dlg); }
     dlg.innerHTML =
-      '<div class="modal-box" style="max-width:480px">' +
+      '<div class="modal-box" style="max-width:min(800px,96vw)">' +
         '<div class="modal-h" style="background:#fef2f2;border-bottom:1px solid #fecaca">' +
           '<h2 style="font-size:15px;color:#991b1b;margin:0">\u26a0 Engine self-check failed</h2>' +
         '</div>' +
