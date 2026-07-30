@@ -485,57 +485,37 @@ h1,h2,h3{font-weight:700;line-height:1.3;color:var(--tx)}
 .modal-box.lg{max-width:780px}
 .modal-box.sm{max-width:420px}
 /* ============================================================================
-   RESPONSIVE LAYOUT — rebuilt v60p-261k. Replaces the v60p-261j desktop hack.
-   The previous build scaled the whole #app with CSS transform:scale(1.22/1.32)
-   plus width/height fudge — that broke window fit, scrolling and fixed layout
-   on desktop. Transforms are gone. This uses ordinary responsive rules only,
-   tuned for four device classes: phone, tablet, laptop, large desktop.
-   #app stays at its base: height:100vh; flex column. Nothing is transformed.
+   RESPONSIVE + DPI-AWARE SCALING — rebuilt v60p-261n.
+   -------------------------------------------------------------------------
+   Root cause (confirmed on a 3200x1800 laptop at 250% Windows scale): the app
+   is built in fixed px. In a BROWSER, Chrome applies the OS display-scale for
+   the page, so it looks right. In the PACKAGED PWA/Store app, that OS scale is
+   NOT applied to the web content, so the whole UI renders ~2.5x too small
+   ("everything uniformly small"). Fixed CSS zoom breakpoints can't fix this —
+   the right scale differs per machine (100% / 150% / 250% ...).
+   SOLUTION: a tiny script (see #dpiAutoScale below) reads the real device
+   scale (window.devicePixelRatio) and applies a matching `zoom` to #app ONLY
+   when the surrounding shell hasn't already scaled the content. That keeps a
+   normal 100% browser at 1.0 and lifts a 250% packaged app to 2.5. `zoom`
+   (not transform) is used so the layout REFLOWS and window-fit/scroll stay
+   correct. This CSS keeps only layout responsiveness; scale is done in JS.
    ========================================================================== */
-
-/* ---- PHONE (base, up to 600px): keep the compact base layout. -------------
-   Tighten view padding and let template tiles go single-column so nothing is
-   forced wider than the screen. */
 @media (max-width:600px){
   .view{padding:12px}
   .tpl-grid{grid-template-columns:1fr;gap:12px}
   .modal-box,.modal-box.lg,.modal-box.sm{max-width:96vw;width:96vw}
 }
-
-/* ---- TABLET (601–899px): two-up tiles, comfortable padding. --------------- */
-@media (min-width:601px) and (max-width:899px){
+@media (min-width:601px) and (max-width:1024px){
   .view{padding:16px 20px}
-  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-  .modal-box{max-width:92vw}
-  .modal-box.lg{max-width:94vw;width:94vw}
-  .modal-box.sm{max-width:min(520px,92vw)}
+  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
 }
-
-/* ---- LAPTOP (900px+): a little more breathing room + readability. No zoom. */
-@media (min-width:900px){
+@media (min-width:1025px){
   .view{padding:18px 28px}
-  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
-  .modal-box{max-width:min(1100px,94vw)}
-  .modal-box.lg{max-width:min(1400px,94vw);width:94vw}
-  .modal-box.sm{max-width:min(560px,94vw)}
-  /* modest readability lift — small, non-compounding, no root-font zoom */
-  .btn{font-size:14px;padding:9px 16px}
-  .tbl{font-size:14px}
-  .tbl thead th{font-size:11px;padding:11px 12px}
-  .fg input,.fg select,.fg textarea{font-size:15px;padding:10px 12px}
-  .kpi .value{font-size:22px}
+  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+  .modal-box{max-width:1100px}
+  .modal-box.lg{max-width:1400px;width:94vw}
+  .modal-box.sm{max-width:560px}
 }
-
-/* ---- LARGE DESKTOP (1280px+): wider content column, cap the sprawl. -------- */
-@media (min-width:1280px){
-  .view{padding:22px 44px}
-  .tpl-grid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px}
-  .modal-box{max-width:min(1200px,90vw)}
-  .modal-box.lg{max-width:min(1500px,92vw);width:92vw}
-  /* keep the main content from stretching edge-to-edge on very wide monitors */
-  .view > .wrap, .view > .card, .view > .grid{max-width:1600px;margin-left:auto;margin-right:auto}
-}
-
 
 .modal-h{padding:18px 22px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .modal-h h2{font-size:17px;font-weight:700;color:var(--tx);flex:1}
@@ -2345,7 +2325,64 @@ body.gantt-fs .bos-chip-floating { display:inline-flex !important }
 
 /* v60p-120: build constant — used by FMT.provenanceStamp() so every output (BoS, Director
    Brief, dashboard, PDFs) carries the same version label. Updated on every release. */
-if (typeof window !== 'undefined') window.__AMELIE_BUILD__ = '60p-261k';
+if (typeof window !== 'undefined') window.__AMELIE_BUILD__ = '60p-261n';
+
+/* ============================================================================
+   v60p-261n DPI-AWARE AUTO-SCALE.
+   In a normal browser, window.innerWidth already reflects the OS display scale,
+   so no correction is needed (scale stays 1). In the packaged PWA/Store shell,
+   the OS scale is NOT applied to the web content: the content is laid out at
+   full device pixels, so innerWidth ~= the raw panel width (e.g. 3200) while
+   devicePixelRatio reports the real OS scale (e.g. 2.5). We detect that gap and
+   apply `zoom` to #app to bring the UI back to the intended size. Clamped to a
+   sane range; re-applied on resize/DPI change. Never scales phones down.
+   ========================================================================== */
+(function(){
+  function applyDpiScale(){
+    try {
+      var app = document.getElementById('app');
+      if (!app) return;
+      var dpr = window.devicePixelRatio || 1;
+      var w = window.innerWidth || document.documentElement.clientWidth || 0;
+
+      /* Heuristic: if the browser/shell has ALREADY applied the OS scale, the
+         CSS viewport width is the "logical" width (e.g. a 3200px/250% panel
+         reports ~1280 CSS px). In that case innerWidth is modest and we do
+         nothing. If the shell did NOT apply the scale, innerWidth is close to
+         the raw device width (large, e.g. 3200) AND dpr>1 — that's the packaged
+         app case, so we scale by dpr. We treat "innerWidth very large for the
+         dpr" as the tell. */
+      var logicalWidth = w / dpr;               /* what the width WOULD be if scaled */
+      var scale = 1;
+
+      /* If dpr>1 and the viewport looks unscaled (logicalWidth still large,
+         meaning the shell handed us raw pixels), correct by dpr. */
+      if (dpr > 1.05 && w > 1400 && logicalWidth > 1100) {
+        scale = dpr;
+      }
+
+      /* Clamp so we never do anything absurd. */
+      if (scale < 1) scale = 1;
+      if (scale > 3) scale = 3;
+
+      /* Only touch zoom if we're actually correcting, so a normal browser is
+         left completely untouched (scale === 1 -> clear any inline zoom). */
+      if (scale === 1) { app.style.zoom = ''; }
+      else { app.style.zoom = String(scale); }
+    } catch (e) { /* never let scaling break the app */ }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyDpiScale);
+  } else {
+    applyDpiScale();
+  }
+  window.addEventListener('resize', applyDpiScale);
+  /* devicePixelRatio can change when the window moves between monitors */
+  if (window.matchMedia) {
+    try { window.matchMedia('(resolution: 1dppx)').addEventListener('change', applyDpiScale); } catch(e){}
+  }
+  window.__AMELIE_applyDpiScale = applyDpiScale;
+})();
 /* v60p-222: PUBLIC version — the clean number users and the app stores see ("1.0").
    The internal build above stays precise for forensic traceability and bug reports.
    UI shows the public version; exported reports show "v1.0 (build 60p-221)". */
